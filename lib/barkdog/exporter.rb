@@ -30,9 +30,6 @@ class Barkdog::Exporter
     monitors.each do |m|
       name = m.delete('name')
 
-      if monitor_by_name[name]
-        raise "Duplicate monitor name exists: #{name}"
-      end
 
       EXCLUDE_KEYS.each do |key|
         m.delete(key)
@@ -42,7 +39,12 @@ class Barkdog::Exporter
         m['options'].delete('silenced')
       end
 
-      monitor_by_name[name] = m
+      if monitor_by_name[name]
+        newname = name + '_conflict'
+        monitor_by_name[newname] = m
+      else
+        monitor_by_name[name] = m
+      end
     end
 
     monitor_by_name
